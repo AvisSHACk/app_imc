@@ -4,28 +4,41 @@ import styled from "styled-components";
 function App() {
   const [inputPeso, cambiarInputPeso] = useState("");
   const [inputAltura, cambiarInputAltura] = useState("");
-  const [imc, cambiarImc] = useState("");
+  const [mensajeIMC, cambiarmensajeIMC] = useState("");
 
-  const validarDatos = (peso, altura) => {
-    if(!isNaN(peso) && !isNaN(altura)) {
-      return true;
-    } else {
-      return false;
-    };
+  const cambiarEstado = (e) => {
+    if(e.target.name === "peso") {
+      cambiarInputPeso(e.target.value.replace(/[^0-9.]/g, ''));
+    } else if (e.target.name === "altura"){
+      cambiarInputAltura(e.target.value.replace(/[^0-9.]/g, ''));
+    }
   }
 
   const calcularIMC = (e) => {
     e.preventDefault();
-    if(validarDatos(inputPeso, inputAltura)) {
-      let imc = inputPeso / Math.pow(inputAltura, 2)
 
-      cambiarImc(`Tu imc es: ${imc.toFixed(2)}`);
+    if(inputPeso !== '' && inputAltura !== '') {
+      if(inputPeso === "0"){
+        cambiarmensajeIMC("Por favor ingresa un peso mayor a 0");
+        return;
+      } else if(!/^[0-9][.][0-9]+$/.test(inputAltura)){
+        cambiarmensajeIMC("Por favor ingresa la altura en metros");
+        return;
+      } else {
+        let imc = inputPeso / Math.pow(inputAltura, 2)
+        cambiarmensajeIMC(`Tu imc es: ${imc.toFixed(2)}`);
+      } 
     } else {
-      cambiarImc("Por favor ingresa datos correctos")
+      cambiarmensajeIMC("Por favor rellena todos los campos");
     }
+
     cambiarInputPeso("");
     cambiarInputAltura("");
   }
+  
+      
+
+    
 
   return (
     <>
@@ -34,15 +47,17 @@ function App() {
         <FormularioApp action="">
           <Input 
             type="text"
+            name="peso"
             value={inputPeso}
-            onChange={(e) => cambiarInputPeso(e.target.value)}
+            onChange={(e) => cambiarEstado(e)}
             placeholder="Ingresa tu peso"
           />
 
           <Input 
             type="text"
+            name="altura"
             value={inputAltura}
-            onChange={(e) => cambiarInputAltura(e.target.value)}
+            onChange={(e) => cambiarEstado(e)}
             placeholder="Ingresa tu Altura"
           />
           <Button
@@ -54,7 +69,7 @@ function App() {
           </Button>
         </FormularioApp>
         
-        {imc !== "" && <IMC>{imc}</IMC>}
+        {mensajeIMC !== "" && <IMC>{mensajeIMC}</IMC>}
         
       </ContenedorApp>
     </>
